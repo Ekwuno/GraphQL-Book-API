@@ -56,7 +56,7 @@ const AuthorType = new GraphQLObjectType({
         books :{
             type: new GraphQLList(BookType),// the author might have a list of books wrote so we use GraphQLList
             resolve(parent,args){
-                return _.filter(books,{authorid:parent.id})
+                return _.filter(books,{authorid:parent.id})// this looks for the books a specific author wrote by looking through to find matching authorids
             }
         }
     }) // fileds is a function to avoid error when linking relationships
@@ -78,6 +78,7 @@ const RootQuery =  new GraphQLObjectType({
                 return  _.find(books,{id:args.id});
             }
         },
+        // Finds authors 
         author:{
             type: AuthorType,
             args:{id:{type:GraphQLID}},
@@ -85,12 +86,14 @@ const RootQuery =  new GraphQLObjectType({
                 return _.find(authors,{id:args.id});
             }
         },
+        //Gets list of all the books
         books:{
             type: new GraphQLList(BookType),
             resolve(parent,args){
                 return books
             }
         },
+        //Gets list of all the authors 
         authors:{
             type: new GraphQLList(AuthorType),
             resolve(parent,args){
