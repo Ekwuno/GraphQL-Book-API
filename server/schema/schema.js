@@ -119,23 +119,23 @@ const Mutation = new GraphQLObjectType({
                return author.save() 
             }
         },
-
-        addBook: {
+        addBook:{
             type:BookType,
             args:{
-                name: {type: new GraphQLNonNull(GraphQLString) }, 
-                genre: {type: new GraphQLNonNull(GraphQLString)},
+                name:{type:new GraphQLNonNull(GraphQLString)},
+                genre:{type:new GraphQLNonNull(GraphQLString)},
                 authorid:{type: new GraphQLNonNull(GraphQLID)}
             },
             resolve(parent,args){
                 let book = new Book({
-                    name = args.name,
-                    genre = args.genre,
-                    authorid = args.authorid,
+                    name: args.name,
+                    genre: args.genre,
+                    authorid:args.authorid
                 });
                 return book.save();
             }
         }
+       
     }
 })
 
