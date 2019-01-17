@@ -1,6 +1,9 @@
 // contract defining object types and relationships between them 
 const graphql = require ('graphql');
-const _ =  require('lodash')
+const _ =  require('lodash');
+const Book = require('./../models/book')
+const Author = require('./../models/author')
+
 
 // GraphQLObejectType &GraphQLString are destructed from graphQL to be used
 const{
@@ -9,26 +12,12 @@ const{
     GraphQLSchema,
     GraphQLID,
     GraphQLInt,
-    GraphQLList
+    GraphQLList,
+    GraphQLNonNull
     } = graphql; 
 
 
-//dummy data to test resolver functions 
-var books = [
-    {name:'Name of the Wind', genre:'Fantasy',id:'1',authorid:'1'},
-    {name:'The Final Empire', genre:'Fantasy',id:'2',authorid:'2'},
-    {name:'The Long Earth', genre:'Sci-Fi',id:'3',authorid:'3'},
-    {name:'The Devil may ry', genre:'Sci-Fi',id:'4',authorid:'3'},
-    {name:'Hybrid', genre:'romance',id:'5',authorid:'2'},
-    {name:'The Earth', genre:'Sci-Fi',id:'6',authorid:'3'}
-];
 
-//dummy data for authors 
-var authors = [
-    {name:'Patrick yams',age:44,id:'1'},
-    {name:'Ekwuno Obinna',age:22,id:'2'},
-    {name:'chinyere Nnaji',age:21,id:'3'}
-];
 
 
 //object types 
@@ -42,7 +31,8 @@ const BookType = new GraphQLObjectType({
             type: AuthorType,
             resolve(parent,args){
                 console.log(parent); //refers to books
-                return _.find(authors,{id:parent.authorid});
+                // return _.find(authors,{id:parent.authorid});
+                return Author.findById(parent.authorid)
             }
         }
     }) // fileds is a function to avoid error when linking relationships
@@ -56,7 +46,8 @@ const AuthorType = new GraphQLObjectType({
         books :{
             type: new GraphQLList(BookType),// the author might have a list of books wrote so we use GraphQLList
             resolve(parent,args){
-                return _.filter(books,{authorid:parent.id})// this looks for the books a specific author wrote by looking through to find matching authorids
+                // return _.filter(books,{authorid:parent.id})// this looks for the books a specific author wrote by looking through to find matching authorids
+                return Book.find({authorid:parent.id});
             }
         }
     }) // fileds is a function to avoid error when linking relationships
@@ -75,7 +66,8 @@ const RootQuery =  new GraphQLObjectType({
                 args:{ id:{type:GraphQLID}},
                 resolve(parent,args){
                 //code to get data from db 
-                return  _.find(books,{id:args.id});
+                // return  _.find(books,{id:args.id});
+                return Book.findById(args.id);
             }
         },
         // Finds authors 
@@ -83,21 +75,24 @@ const RootQuery =  new GraphQLObjectType({
             type: AuthorType,
             args:{id:{type:GraphQLID}},
             resolve(parent,args){
-                return _.find(authors,{id:args.id});
+                // return _.find(authors,{id:args.id});
+                return Author.findById(args.id)
             }
         },
         //Gets list of all the books
         books:{
             type: new GraphQLList(BookType),
             resolve(parent,args){
-                return books
+                // return books
+                return Book.find({})
             }
         },
         //Gets list of all the authors 
         authors:{
             type: new GraphQLList(AuthorType),
             resolve(parent,args){
-                return authors
+                // return authors
+                return Author.find({})
             }
         }
           
@@ -105,6 +100,46 @@ const RootQuery =  new GraphQLObjectType({
     }
 })
 
+//Mutaions 
+
+const Mutation = new GraphQLObjectType({
+    name: 'Mutation',
+    fields:{
+        addAuthor:{
+            type:AuthorType,
+            args:{ 
+                name: {type : new GraphQLNonNull(GraphQLString)},
+                age: {type: new GraphQLNonNull(GraphQLInt)}
+            },
+            resolve(parent,args){
+                let author = new Author({ //author here refers to the model db
+                    name: args.name,
+                    age: args.age 
+                }); 
+               return author.save() 
+            }
+        },
+
+        addBook: {
+            type:BookType,
+            args:{
+                name: {type: new GraphQLNonNull(GraphQLString) }, 
+                genre: {type: new GraphQLNonNull(GraphQLString)},
+                authorid:{type: new GraphQLNonNull(GraphQLID)}
+            },
+            resolve(parent,args){
+                let book = new Book({
+                    name = args.name,
+                    genre = args.genre,
+                    authorid = args.authorid,
+                });
+                return book.save();
+            }
+        }
+    }
+})
+
 module.exports =  new GraphQLSchema({
-    query : RootQuery
+    query : RootQuery,
+    mutation : Mutation 
 })
