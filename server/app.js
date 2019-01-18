@@ -1,8 +1,8 @@
 const express = require('express');
 const app = express();
 const graphqlHTTP = require('express-graphql');
-const schema = require('./schema/schema.js');
-const mongoose = require('mongoose')
+const schema = require('./schema/schema.js');// imported from other components 
+const mongoose = require('mongoose')// imported from other components 
 
 //middleware for understanding graphql with express, each time a requests hits the url the function fires 
 app.use('/graphql', graphqlHTTP({
