@@ -5,14 +5,17 @@ const schema = require('./schema/schema.js');// imported from other components
 const mongoose = require('mongoose')// imported from other components 
 const cors = require('cors')
 
+// allow cross-origin requests
+app.use(cors());
+
 //middleware for understanding graphql with express, each time a requests hits the url the function fires 
 app.use('/graphql', graphqlHTTP({
     schema,
     graphiql: true
 }));
 
-// allow cross-origin requests
-app.use(cors());
+
+
 
 
 
