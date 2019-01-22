@@ -1,18 +1,24 @@
 import React ,{Component} from 'react'
-import {graphql} from 'react-apollo'
-import {gql} from 'apollo-boost'
+import {graphql,compose} from 'react-apollo'
+// import {gql} from 'apollo-boost'
+import {getAuthorsQuery,addBookMutation,getBookQuery} from '../queries/queries'
 
-const getAuthorsQuery = gql`
-{
-    authors{
-        name
-        id
-    }
-}`
 
  class AddBook extends Component{
+
+    constructor(props){
+        super(props);
+        this.state = {
+            name: '',
+            genre:'',
+            authorid:''
+        }
+        // this.handleName = this.handleName.bind(this)
+        this.submitForm = this.submitForm.bind(this)
+    }
     displayAuthors(){
-        var data = this.props.data;
+        var data = this.props.getAuthorsQuery;
+        // console.log(this.props)
         if (data.loading){
             return <option disabled>Loading Authors...</option>
         }else {
@@ -23,23 +29,39 @@ const getAuthorsQuery = gql`
             })
         }
     }
+
+    submitForm = e =>{
+        e.preventDefault();
+        // console.log(this.state)
+        this.props.addBookMutation({
+            variables:{
+                name:this.state.name,
+                genre:this.state.genre,
+                authorid:this.state.authorid
+
+            },
+            refetchQueries : [{query:getBookQuery}]
+        })
+
+    }
+
     render(){
         return(
             
-                <form id='add-book'>
+                <form id='add-book' onSubmit ={this.submitForm}>
                     <div className = 'field'>
                         <label>Book Name:</label>
-                        <input type= 'text'/>
+                        <input type= 'text' onChange= {(e)=> this.setState({name:e.target.value})}/>
                     </div>
         
                     <div className = 'field'>
                         <label>Genre:</label>
-                        <input type= 'text'/>
+                        <input type= 'text'onChange= {(e)=> this.setState({genre:e.target.value})}/>
                     </div>
         
                     <div className = 'field'>
                         <label>Author</label>
-                        <select>
+                        <select  onChange= {(e)=> this.setState({authorid:e.target.value})}>
                             <option>
                                 select author 
                             </option>
@@ -54,4 +76,8 @@ const getAuthorsQuery = gql`
     }
 }
 
-export default graphql(getAuthorsQuery) (AddBook)
+export default compose(
+    graphql(getAuthorsQuery,{name:"getAuthorsQuery"}),// binding multiple queries to one componet
+    graphql(addBookMutation,{name:"addBookMutation"})
+    
+) (AddBook)
