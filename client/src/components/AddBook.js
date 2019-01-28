@@ -66,7 +66,7 @@ import {getAuthorsQuery,addBookMutation,getBookQuery} from '../queries/queries'
                         </select>
                     </div>
         
-                    <button>+</button>
+                    <button className = 'button'>+</button>
                 </form>
             
         )
