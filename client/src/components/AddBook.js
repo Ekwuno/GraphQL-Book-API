@@ -1,6 +1,5 @@
 import React ,{Component} from 'react'
 import {graphql,compose} from 'react-apollo'
-// import {gql} from 'apollo-boost'
 import {getAuthorsQuery,addBookMutation,getBookQuery} from '../queries/queries'
 
 
@@ -13,18 +12,16 @@ import {getAuthorsQuery,addBookMutation,getBookQuery} from '../queries/queries'
             genre:'',
             authorid:''
         }
-        // this.handleName = this.handleName.bind(this)
         this.submitForm = this.submitForm.bind(this)
     }
     displayAuthors(){
         var data = this.props.getAuthorsQuery;
-        // console.log(this.props)
         if (data.loading){
             return <option disabled>Loading Authors...</option>
         }else {
             return data.authors.map(author =>{
                 return(
-                    <option key= {author.id}>{author.name}</option>
+                    <option key= {author.id} value={author.id}>{author.name}</option> // author.id as value g
                 );
             })
         }
