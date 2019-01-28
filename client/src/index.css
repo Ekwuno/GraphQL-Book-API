@@ -45,6 +45,21 @@ form{
 
 }
 
+.New-form {
+
+  background: #fff;
+  padding: 10px;
+  position: fixed;
+  left: 436px;
+  bottom: 25px;
+  width: 231px;
+  /* border: #444 solid */
+
+}
+
+.new-button{
+
+}
 form .field{
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -61,7 +76,7 @@ form select, form input{
     box-sizing: border-box;
 }
 
-form button{
+form .button{
   color: #fff;
   background:#ad1457;
   font-size: 2em;
